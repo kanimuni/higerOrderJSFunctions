@@ -1,3 +1,21 @@
+var plusOne = function(n) {
+  return n+1;
+};
+
+var isEven = function(n) {
+  if (n % 2 === 0) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+var arr = [1,2,3,4,5];
+var obj = {'a':1, 'b':2,'c':3};
+var arrOfObj = [{'name':'kani', 'age':40}, {'name':'aki', 'age':30}];
+
+//----------------------------------------------
+
 
   // Returns whatever value is passed as the argument. This function doesn't
   // seem very useful, but remember it--if a function needs to provide an
@@ -50,9 +68,6 @@ var last = function(array, n) {
     return array.slice(-n);
   }
 };
-
-
-
 
   // Call iterator(value, key, collection) for each element of collection.
   // Accepts both arrays and objects.
@@ -107,72 +122,58 @@ var filter = function(collection, test) {
 
 // <reject> Return all elements of an array that don't pass a truth test.
 
-  
+var reject = function(collection, test) {
+  return filter(collection, function(value) {
+    return !test(value);
+  });
+};
+
+
+ //<uniq> Produce a duplicate-free version of the array.
+
+var uniq = function(array) {
+  var resultArray = [];
+  var tempObj = {};
+  each(array, function(value) {
+    if (tempObj[value] === undefined) {
+      resultArray.push(value);
+      tempObj[value] = value;
+    }
+  });
+  return resultArray.sort();
+};
+
+
+  // <map> Return the results of applying an iterator to each element.
+  // map() is a useful primitive iteration function that works a lot
+  // like each(), but in addition to running the operation on all
+  // the members, it also maintains an array of results.
+   
+var map = function(collection, iterator) {
+  var resultArray = [];
+  each(collection, function(value, key, collection) {
+    resultArray.push(iterator(value, key, collection));
+  });
+  return resultArray;
+};
 
 
 
+// TIP: map is really handy when you want to transform an array of
+// values into a new array of values. _.pluck() is solved for you
+// as an example of this.
+// Takes an array of objects and returns and array of the values of
+// a certain property in it. E.g. take an array of people and return
+// an array of just their ages
+
+var pluck = function(collection, key) {
+  return map(collection, function(value) {
+    return value[key];
+  });
+};
 
 
 
-
-
-//   _.reject = function(collection, test) {
-//     // TIP: see if you can re-use _.filter() here, without simply
-//     // copying code in and modifying it
-//     var resultArray = [];
-//     _.each(collection, function(value) {
-//       if (!test(value)) {
-//         resultArray.push(value);
-//       }
-//     });
-//     return resultArray;
-//   };
-
-//  // Produce a duplicate-free version of the array.
-//  _.uniq = function(array) {
-//   var noDupArray = [];
-//   var hashObject = {};
-
-//   _.each(array, function(value) {
-//     if (hashObject[value] === undefined) {
-//       noDupArray.push(value);
-//       hashObject[value] = true;
-//     }
-  
-//   });
-//   return noDupArray.sort();
-// };
-
-
-//   // Return the results of applying an iterator to each element.
-//   _.map = function(collection, iterator) {
-//     // map() is a useful primitive iteration function that works a lot
-//     // like each(), but in addition to running the operation on all
-//     // the members, it also maintains an array of results.
-//     var mappedArray = [];
-//     _.each(collection, function(key, value, collection) {
-//     mappedArray.push(iterator(key, value, collection));
-//     });
-//       return mappedArray;
-//   };
-
-//   /*
-//    * TIP: map is really handy when you want to transform an array of
-//    * values into a new array of values. _.pluck() is solved for you
-//    * as an example of this.
-//    */
-
-//   // Takes an array of objects and returns and array of the values of
-//   // a certain property in it. E.g. take an array of people and return
-//   // an array of just their ages
-//   _.pluck = function(collection, key) {
-//     // TIP: map is really handy when you want to transform an array of
-//     // values into a new array of values. _.pluck() is solved for you
-//     // as an example of this.
-//     return _.map(collection, function(item){
-//       return item[key];
-//     });
-//   };
 
 //   // Reduces an array or object to a single value by repetitively calling
 //   // iterator(accumulator, item) for each item. accumulator should be
