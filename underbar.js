@@ -173,231 +173,227 @@ var pluck = function(collection, key) {
 };
 
 
-
-
-//   // Reduces an array or object to a single value by repetitively calling
-//   // iterator(accumulator, item) for each item. accumulator should be
-//   // the return value of the previous iterator call.
-//   //  
-//   // You can pass in a starting value for the accumulator as the third argument
-//   // to reduce. If no starting value is passed, the first element is used as
-//   // the accumulator, and is never passed to the iterator. In other words, in
-//   // the case where a starting value is not passed, the iterator is not invoked
-//   // until the second element, with the first element as its second argument.
-//   //  
-//   // Example:
-//   //   var numbers = [1,2,3];
-//   //   var sum = _.reduce(numbers, function(total, number){
-//   //     return total + number;
-//   //   }, 0); // should be 6
-//   //  
-//   //   var identity = _.reduce([5], function(total, number){
-//   //     return total + number * number;
-//   //   }); // should be 5, regardless of the iterator function passed in
-//   //          No accumulator is given so the first element is used.
+  // <reduce> Reduces an array or object to a single value by repetitively calling
+  // iterator(accumulator, item) for each item. accumulator should be
+  // the return value of the previous iterator call.
+  //  
+  // You can pass in a starting value for the accumulator as the third argument
+  // to reduce. If no starting value is passed, the first element is used as
+  // the accumulator, and is never passed to the iterator. In other words, in
+  // the case where a starting value is not passed, the iterator is not invoked
+  // until the second element, with the first element as its second argument.
+  //  
+  // Example:
+  //   var numbers = [1,2,3];
+  //   var sum = _.reduce(numbers, function(total, number){
+  //     return total + number;
+  //   }, 0); // should be 6
+  //  
+  //   var identity = _.reduce([5], function(total, number){
+  //     return total + number * number;
+  //   }); // should be 5, regardless of the iterator function passed in
+  //          No accumulator is given so the first element is used.
   
+var reduce = function(collection, iterator, accumulator) {
+  if (arguments.length > 2) {
+    each(collection, function(value, key) {
+      accumulator = iterator(accumulator, value, key);
+    });
+  } else {
+    var accumulatorProvided = false;
+    each(collection, function(value, key) {
+      if (accumulatorProvided === false) {
+        accumulator = value;
+        accumulatorProvided = true;
+      } else {
+        accumulator = iterator(accumulator, value, key);
+      }
+    });
+  }
+  return accumulator;
+};
 
 
-// _.reduce = function(collection, iterator, accumulator) {
-//   if (arguments.length > 2) {
-//     _.each(collection, function(value, key) {
-//       accumulator = iterator(accumulator, value, key);
-//     });
-//   } else {
-//     var noAccumulatorProvided = true;
-//     _.each(collection, function(value, key) {
-//       if (noAccumulatorProvided) {
-//         accumulator = value;
-//         noAccumulatorProvided = false;
-//       } else {
-//         accumulator = iterator(accumulator, value, key);
-//       }
-//     });
-//   }
-//   return accumulator;
-// };
+  // <contains> Determine if the array or object contains a given value (using `===`).
+  // TIP: Many iteration problems can be most easily expressed in
+  // terms of reduce(). Here's a freebie to demonstrate!
 
-//   // Determine if the array or object contains a given value (using `===`).
-//   _.contains = function(collection, target) {
-//     // TIP: Many iteration problems can be most easily expressed in
-//     // terms of reduce(). Here's a freebie to demonstrate!
-//     return _.reduce(collection, function(wasFound, item) {
-//       if (wasFound) {
-//         return true;
-//       }
-//       return item === target;
-//     }, false);
-//   };
+var contains = function(collection, target) {
+  var result = false;
+  each(collection, function(value, key) {
+    if(value === target) {
+      result = true;
+    }
+  });
+  return result;
+};
 
-
-// // Determine whether all of the elements match a truth test.
-// // TIP: Try re-using reduce() here.
-// _.every = function(collection, iterator) {
-//   iterator = iterator || _.identity;
-//   return _.reduce(collection, function(accumulator, item) {
-//     if ( accumulator && iterator(item)) {
-//       accumulator = true;
-//       return accumulator;
+// var containsWithReduce = function(collection, target) {
+//   return reduce(collection, function(accumulator, value) {
+//     if( (accumulator) || (value === target) ) {
+//       return true;
 //     } else {
-//       accumulator = false;
-//       return accumulator;
-//     }
-//   }, true);
-// };
-
-
-//   // Determine whether any of the elements pass a truth test. If no iterator is
-//   // provided, provide a default one
-//   // TIP: There's a very clever way to re-use every() here.
-
-// _.some = function(collection, iterator) {
-//   iterator = iterator || _.identity;
-//   return _.reduce(collection, function(accumulator, item) {
-//     if (accumulator || iterator(item)) {
-//       accumulator = true;
-//       return accumulator;
-//     } else {
-//       accumulator = false;
-//       return accumulator;
+//       return false;
 //     }
 //   }, false);
 // };
 
+// <every> Determine whether all of the elements match a truth test.
+// TIP: Try re-using reduce() here.
 
-//   /*
-//    * OBJECTS
-//    * =======
-//    *
-//    * In this section, we'll look at a couple of helpers for merging objects.
-//    */
-
-//   // Extend a given object with all the properties of the passed in
-//   // object(s).
-//   //
-//   // Example:
-//   //   var obj1 = {key1: "something"};
-//   //   _.extend(obj1, {
-//   //     key2: "something new",
-//   //     key3: "something else new"
-//   //   }, {
-//   //     bla: "even more stuff"
-//   //   }); // obj1 now contains key1, key2, key3 and bla
+var every = function(collection, iterator) {
+  return reduce(collection, function(accumulator, item) {
+    if( accumulator && iterator(item) ) {
+      return true;
+    } else {
+      return false;
+    }
+  }, true);
+};
 
 
-// _.extend = function(obj) {
-//   _.each(arguments, function(subobj) {    //each takes the arguments passed here and passes on to the next each
-//     _.each(subobj, function(value, key) { //Now this each takes the object passed and passes the value, key to the iterator
-//       obj[key] = value;                   //This is basically an overright of any key:object pairs that was passed on to obj
-//     });
-//   });
-//   return obj;
-// };
+// <some> Determine whether any of the elements pass a truth test. If no iterator is
+// provided, provide a default one
+// TIP: There's a very clever way to re-use every() here.
 
+var some = function(collection, iterator) {
+  iterator = iterator || identity;
 
-// _.defaults = function(obj) {
-//   _.each(arguments, function(subobj) {
-//     _.each(subobj, function(value, key) {
-//       if (obj[key] === undefined) {
-//         obj[key] = value;
-//       }
-//     });
-//   });
-//   return obj;
-// };
-
-
-//   /**
-//    * FUNCTIONS
-//    * =========
-//    *
-//    * Now we're getting into function decorators, which take in any function
-//    * and return out a new version of the function that works somewhat differently
-//    */
-
-//   // Return a function that can be called at most one time. Subsequent calls
-//   // should return the previously returned value.
-// /*
-
-//   // Memorize an expensive function's results by storing them. You may assume
-//   // that the function only takes primitives as arguments.
-//   // memoize could be renamed to oncePerUniqueArgumentList; memoize does the
-//   // same thing as once, but based on many sets of unique arguments.
-//   //
-//   // _.memoize should return a function that, when called, will check if it has
-//   // already computed the result for the given argument and return that value
-//   // instead if possible.
-// */
-
-// _.once = function(func) {
-//   var result;
-//   var alreadyCalled = false;
-//   return function() {
-//     if (!alreadyCalled) {
-//       result = func.apply(this, arguments);
-//       alreadyCalled = true;
-//     }
-//     return result;
-//   };
-// };
-
-//  _.memoize = function(func) {
-//   var memory = {};
-//     return function() {
-//       var args = [].join.call(arguments, ':');
-//       if (!memory[args]) {
-//         memory[args] = func.apply(this, arguments);
-//       }
-//     return memory[args];
-//   };
-// };
-
-//   // Delays a function for the given number of milliseconds, and then calls
-//   // it with the arguments supplied.
-//   //
-//   // The arguments for the original function are passed after the wait
-//   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
-//   // call someFunction('a', 'b') after 500ms
-
-// /*
-//   _.delay = function(func, wait) {
-//     //var args = slice.call(arguments, 2);
-//     var args = Array.prototype.slice.call(arguments, 2);
-//       return setTimeout(function() {return func.apply(this, args);}, wait);
-//   };
-// */
-
-//   _.delay = function(func, wait) {
-//     var args = [].slice.call(arguments, 2);
-//       return setTimeout(function() {return func.apply(this, args);}, wait);
-//   };
-
-
-//   /**
-//    * ADVANCED COLLECTION OPERATIONS
-//    * ==============================
-//    */
-
-//   // Randomizes the order of an array's contents.
-//   //
-//   // TIP: This function's test suite will ask that you not modify the original
-//   // input array. For a tip on how to make a copy of an array, see:
-//   // http://mdn.io/Array.prototype.slice
-//   _.shuffle = function(array) {
-//     var newArray = [];
-//     var resultArray = [];
-//     var newobj = {};
-//     _.each(array, function(value, key) {
-//       newArray.push([value, Math.random()]);
-//     });
-//     newArray.sort(function(a,b) {return a[1]-b[1];});
-//     _.each(newArray, function(value, key) {
-//       resultArray.push(newArray[key][0]);
-//     });
-//     return resultArray;
-//   };
+  return reduce(collection, function(accumulator, item) {
+    if( accumulator || iterator(item) ) {
+      return true;
+    } else {
+      return false;
+    }
+  }, false);
+};
 
 
 
+
+// * OBJECTS
+// * =======
+// *
+// * In this section, we'll look at a couple of helpers for merging objects.
+
+// <extend> Extend a given object with all the properties of the passed in object(s).
+//
+// Example:
+//   var obj1 = {key1: "something"};
+//   _.extend(obj1, {
+//     key2: "something new",
+//     key3: "something else new"
+//   }, {
+//     bla: "even more stuff"
+//   }); // obj1 now contains key1, key2, key3 and bla
+
+
+var extend = function(obj) {
+  each(arguments, function(argobjs) {
+    each(argobjs, function(value, key) {
+      obj[key] = value;
+    });
+  });
+  return obj;
+};
+
+var defaults = function(obj) {
+  each(arguments, function(argobjs) {
+    each(argobjs, function(value, key) {
+      if (!obj[key]) {
+        obj[key] = value;
+      }
+    });
+  });
+  return obj;
+};
+
+
+// FUNCTIONS
+// =========
+// Now we're getting into function decorators, which take in any function
+// and return out a new version of the function that works somewhat differently
+// 
+// Return a function that can be called at most one time. Subsequent calls
+// should return the previously returned value.
+// Memorize an expensive function's results by storing them. You may assume
+// that the function only takes primitives as arguments.
+// memoize could be renamed to oncePerUniqueArgumentList; memoize does the
+// same thing as once, but based on many sets of unique arguments.
+// _.memoize should return a function that, when called, will check if it has
+// already computed the result for the given argument and return that value
+// instead if possible.
+
+
+var once = function(func) {
+  var result;
+  var hasrun = false;
+  return function() {
+    if (!hasrun) {
+      result = func.call(this, arguments);
+      hasrun = true;
+    }
+    return result;
+  };
+};
+
+
+var memoize = function(func) {
+  var memobj = {};
+  return function() {
+    var args = Array.prototype.join.call(arguments, ":");
+    if(!(memobj[args])) {
+      memobj[args] = func.apply(this, arguments);
+    }
+    return memobj[args];
+  };
+};
+
+// Delays a function for the given number of milliseconds, and then calls
+// it with the arguments supplied.
+// The arguments for the original function are passed after the wait
+// parameter. For example _.delay(someFunction, 500, 'a', 'b') will
+// call someFunction('a', 'b') after 500ms
+
+
+var delay = function(func, wait) {
+  debugger;
+  var args = Array.prototype.slice.call(arguments, 2);
+  setTimeout(function() {func.apply(this, args);}, wait);
+};
+
+var later = function(func, wait) {
+  var argList = [].slice.call(arguments).slice(2);
+  debugger; 
+  setTimeout(function() {
+    func.apply(this, argList);
+  }, wait);
+};
+
+
+
+// * ADVANCED COLLECTION OPERATIONS
+// * ==============================
+// Randomizes the order of an array's contents.
+//
+// TIP: This function's test suite will ask that you not modify the original
+// input array. For a tip on how to make a copy of an array, see:
+// http://mdn.io/Array.prototype.slice
+
+
+var shuffle = function(array) {
+  var newArray = array.slice();
+  var temp;
+  var randomIndex = 0;
+
+  for(var i=0; i < newArray.length; i++) {
+    randomIndex = Math.floor(Math.random() * newArray.length);
+    temp = newArray[i];
+    newArray[i] = newArray[randomIndex];
+    newArray[randomIndex] = temp;
+  }
+  return newArray;
+};
 
 
 
